@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>TS to C converter</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+
+		
+		<style type="text/css" media="screen">
+			#editor { 
+				position: absolute;
+				top: 0;
+				right: 50%;
+				bottom: 0;
+				left: 0;
+			}
+			#editor2 { 
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 50%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="editor">console.log("Hello, world!");</div>
+				
+		<div id="editor2"></div>
+
+		<script src="./typescript.js"></script>
+		<script src="./ts2c.bundle.js"></script>
+		<script src="./ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+		<script src="./ace-builds/src-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+
+
+		<script>
+			const $tsEditor = document.querySelector('#editor');
+			const $cEditor = document.querySelector('#editor2');
+
+			ace.require("ace/ext/language_tools");
+
+			var editor = ace.edit("editor");
+			editor.setTheme("ace/theme/monokai");
+			editor.session.setMode("ace/mode/typescript");
+			editor.session.setTabSize(4);
+			editor.getSession().setUseWrapMode(true);
+			editor.setOptions({
+				enableBasicAutocompletion: true,
+				enableSnippets: true,
+				enableLiveAutocompletion: false,
+				fontSize: "18px",
+				fontFamily: "JetBrains Mono, monospace"
+			});
+			
+			var editor2 = ace.edit("editor2");
+			editor2.setTheme("ace/theme/monokai");
+			editor2.session.setMode("ace/mode/c_cpp");
+			editor2.setOptions({
+				readOnly: true,
+				fontSize: "18px",
+				fontFamily: "JetBrains Mono, monospace"
+			});
+			editor2.session.setTabSize(4);
+			editor2.getSession().setUseWrapMode(true);
+
+			$tsEditor.addEventListener('keyup', (e) => {
+				e.preventDefault();
+
+				if (e.keyCode === 13) {
+					convertCode();
+				}
+			});
+
+			const convertCode = (text) => {
+				var convertedCode = ts2c.transpile(editor.session.getValue());
+				
+				editor2.session.setValue(convertedCode);
+			}
+		</script>
+	</body>
+</html>
